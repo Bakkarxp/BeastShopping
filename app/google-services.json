@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "703021766417",
+    "firebase_url": "https://beastshopping-65626.firebaseio.com",
+    "project_id": "beastshopping-65626",
+    "storage_bucket": "beastshopping-65626.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:703021766417:android:63f74d73ed6b9be4",
+        "android_client_info": {
+          "package_name": "com.aboubakr.beastshopping.live"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "703021766417-8m300uivql6hjdqshkofe1ufbqahftdf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-Xkcle3-CRUU3xHUDZimMqQsnjUPybS0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
