@@ -2,8 +2,11 @@ package com.aboubakr.beastshopping.infrastructure;
 
 import android.app.Application;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.otto.Bus;
+
+import aboubakr.beastshopping.live.Module;
 
 public class BeastShoppingApplication extends Application {
     private Bus bus;
@@ -19,8 +22,11 @@ public class BeastShoppingApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        bus.register(this);
+        if(!FirebaseApp.getApps(this).isEmpty()){
+            // Enable disk persistence
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        }
+        Module.Register(this);
     }
 
 }
