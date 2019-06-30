@@ -1,10 +1,15 @@
 package aboubakr.beastshopping.live;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.aboubakr.beastshopping.activities.LoginActivity;
+import com.aboubakr.beastshopping.activities.MainActivity;
 import com.aboubakr.beastshopping.activities.RegisterActivity;
+import com.aboubakr.beastshopping.entities.User;
 import com.aboubakr.beastshopping.infrastructure.BeastShoppingApplication;
 import com.aboubakr.beastshopping.infrastructure.Utils;
 import com.aboubakr.beastshopping.services.AccountServices;
@@ -80,11 +85,16 @@ public class LiveAccountServices extends BaseLiveService {
                                                     reference.child("hasLoggedInWithPassword").setValue(false);
                                                     reference.child("dateJoined").setValue(timeJoined);
 
-                                                    request.progressDialog.dismiss();
-
                                                     Toast.makeText(application.getApplicationContext(),
                                                             "Please, check your email",
                                                             Toast.LENGTH_LONG).show();
+                                                    request.progressDialog.dismiss();
+
+                                                    Intent intent = new Intent(application.getApplicationContext(), LoginActivity.class);
+                                                    // these flagas used as if i called finish() the regesteration activity
+                                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                    application.startActivity(intent);
+
 
 
 
@@ -127,12 +137,46 @@ public class LiveAccountServices extends BaseLiveService {
                                         Toast.LENGTH_LONG).show();
                             }else{
                                 FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                DatabaseReference reference = database.getReference(Utils.FIREBASE_USER_REFERENCE +Utils.encodeEmail(request.userEmail));
-                                reference.child("hasLoggedInWithPassword").setValue(true);
-                                request.progressDialog.dismiss();
-                                Toast.makeText(application.getApplicationContext(),
-                                        "User has logged in",
-                                        Toast.LENGTH_LONG).show();
+                                final DatabaseReference userLocation = database.getReference(Utils.FIREBASE_USER_REFERENCE +Utils.encodeEmail(request.userEmail));
+
+
+
+                                // addValueEventListener() keep listening to query or database reference it is attached to.
+                                // addListenerForSingleValueEvent() executes onDataChange method immediately and after executing that method once,
+                                // it stops listening to the reference location it is attached to.
+
+                                userLocation.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        User user = dataSnapshot.getValue(User.class);
+                                        if(user != null){
+                                            userLocation.child("hasLoggedInWithPassword").setValue(true);
+                                            SharedPreferences sharedPreferences = request.sharedPreferences;
+                                            sharedPreferences.edit().putString(Utils.EMAIL, Utils.encodeEmail(user.getEmail())).apply();
+                                            sharedPreferences.edit().putString(Utils.USERNAME, user.getName()).apply();
+                                            Log.i(LiveAccountServices.class.getSimpleName(),"This was called yo");
+                                            request.progressDialog.dismiss();
+                                            Intent intent = new Intent(application.getApplicationContext(), MainActivity.class);
+                                            // these flagas used as if i called finish() the regesteration activity
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            application.startActivity(intent);
+
+                                        }else {
+                                            request.progressDialog.dismiss();
+                                            Toast.makeText(application.getApplicationContext(),
+                                                    "Failed to connect to server",
+                                                    Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        request.progressDialog.dismiss();
+                                        Toast.makeText(application.getApplicationContext(),
+                                                databaseError.getMessage(),
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                });
                             }
                         }
                     });
@@ -167,11 +211,7 @@ public class LiveAccountServices extends BaseLiveService {
                                 reference.child("name").setValue(request.userName);
                                 reference.child("hasLoggedInWithPassword").setValue(true);
                                 reference.child("dateJoined").setValue(timeJoined);
-                                Log.d("Test", "onDataChange: request.userEmail");
-
-
                             }
-
                         }
 
                         @Override
@@ -182,10 +222,15 @@ public class LiveAccountServices extends BaseLiveService {
                                     Toast.LENGTH_LONG).show();
                         }
                     });
+                    SharedPreferences sharedPreferences = request.sharedPreferences;
+                    sharedPreferences.edit().putString(Utils.EMAIL, Utils.encodeEmail(request.userEmail)).apply();
+                    sharedPreferences.edit().putString(Utils.USERNAME, request.userName).apply();
+
                     request.progressDialog.dismiss();
-                    Toast.makeText(application.getApplicationContext(),
-                            "User has loged in.",
-                            Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(application.getApplicationContext(), MainActivity.class);
+                    // these flagas used as if i called finish() the regesteration activity
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    application.startActivity(intent);
                 }
             }
         });

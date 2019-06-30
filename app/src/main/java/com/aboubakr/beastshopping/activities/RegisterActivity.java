@@ -18,6 +18,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class RegisterActivity extends BaseActivity {
+
+    //region view bindings
     @BindView(R.id.activity_register_loginButton)
     Button loginButton;
     @BindView(R.id.activity_register_linear_layout)
@@ -28,6 +30,7 @@ public class RegisterActivity extends BaseActivity {
     TextView userEmail;
     @BindView(R.id.activity_register_registerButton)
     Button registerButton;
+    //endregion
 
     ProgressDialog mProgressDialog;
 

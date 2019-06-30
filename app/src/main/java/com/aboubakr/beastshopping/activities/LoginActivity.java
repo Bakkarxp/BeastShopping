@@ -1,7 +1,9 @@
 package com.aboubakr.beastshopping.activities;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aboubakr.beastshopping.R;
+import com.aboubakr.beastshopping.infrastructure.Utils;
 import com.aboubakr.beastshopping.services.AccountServices;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -32,6 +35,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class LoginActivity extends BaseActivity {
+
+    //region view bindings
     @BindView(R.id.activity_login_linear_layout)
     LinearLayout linearLayout;
 
@@ -49,9 +54,12 @@ public class LoginActivity extends BaseActivity {
 
     @BindView(R.id.activity_login_userPassword)
     TextView userPassword;
+    //endregion
 
-    ProgressDialog mProgressDialog;
-    CallbackManager mCallbackManager;
+    private ProgressDialog mProgressDialog;
+    private CallbackManager mCallbackManager;
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +73,10 @@ public class LoginActivity extends BaseActivity {
         mProgressDialog.setTitle("Registering......");
         mProgressDialog.setMessage("Attempeting to login");
         mProgressDialog.setCancelable(false);
+        sharedPreferences = getSharedPreferences(Utils.MY_PREFERENCE, Context.MODE_PRIVATE);
     }
+
+
 
     @OnClick(R.id.activity_login_registerButton)
     public void setRegisterButton(){
@@ -75,10 +86,11 @@ public class LoginActivity extends BaseActivity {
 
     @OnClick(R.id.activity_login_loginButton)
     public void setLogInButton(){
-        bus.post(new AccountServices.LogInUserRequest(userEmail.getText().toString(),
-        userPassword.getText().toString(),
-        mProgressDialog));
+        bus.post(new AccountServices.LogInUserRequest(userEmail.getText().toString().trim(),
+        userPassword.getText().toString().trim(),
+        mProgressDialog,sharedPreferences));
     }
+
     @OnClick(R.id.activity_login_facebook_button)
     public void setFacebookButton(){
         mCallbackManager = CallbackManager.Factory.create();
@@ -96,7 +108,7 @@ public class LoginActivity extends BaseActivity {
                                     loginResult.getAccessToken(),
                                     mProgressDialog,
                                     name,
-                                    email));
+                                    email,sharedPreferences));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
