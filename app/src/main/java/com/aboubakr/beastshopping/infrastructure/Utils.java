@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class Utils {
     // firebase reference url for users collection
     public static final String FIREBASE_USER_REFERENCE = "users/";
+    public static final String FIREBASE_SHOPPING_LIST_REFERENCE = "userShoppingList/";
 
     // string for shared preferences
     // shared preferences here used to save user name and email to be used in main activity
@@ -20,6 +21,9 @@ public class Utils {
 
     public static String encodeEmail(String userEmail){
         return  userEmail.replace(".",",");
+    }
+    public static String decodeEmail(String userEmail){
+        return  userEmail.replace(",",".");
     }
 }
 
